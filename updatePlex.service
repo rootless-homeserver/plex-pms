@@ -1,0 +1,10 @@
+[Unit]
+Description=Plex Media Server
+
+[Service]
+Type=oneshot
+ExecStart=/updatePlex.sh
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
