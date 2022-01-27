@@ -8,7 +8,14 @@ dnf install -y --releasever 8 \
     --setopt install_weak_deps=false \
     --nodocs --installroot=$mnt jq
 
-buildah config --env _BUILDAH_STARTED_IN_USERNS="" --env TERM="xterm" --env LANG="C.UTF-8" --env LC_ALL="C.UTF-8" --env BUILDAH_ISOLATION=chroot $container
+buildah config \
+  --env _BUILDAH_STARTED_IN_USERNS="" \
+  --env TERM="xterm" \
+  --env LANG="C.UTF-8" \
+  --env LC_ALL="C.UTF-8" \
+  --env BUILDAH_ISOLATION=chroot \
+  $container
+
 buildah config --port 32400/tcp $container
 mkdir $mnt/config
 mkdir $mnt/libraries
@@ -27,4 +34,4 @@ buildah config --volume /libraries $container
 buildah config --cmd /sbin/init $container
 
 buildah unmount $container
-buildah commit $container plexpms
+buildah commit --iidfile image.sha256 --quiet $container
