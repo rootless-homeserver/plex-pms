@@ -7,7 +7,11 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
     container:
-      image: docker://docker.io/buildah/buildah:latest
+      image: docker://registry.redhat.io/ubi8/buildah:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
+        password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+      options: --isolation=chroot
     outputs:
       image-sha: ${{ steps.build.outputs.image-sha }}
     steps:
@@ -20,7 +24,11 @@ jobs:
           buildah login registry.redhat.io -u ${{ secrets.REGISTRY_REDHAT_IO_USER }} -p ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
           buildah login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           chmod +x ./*.sh
-          buildah unshare ./build.sh
+          if $(buildah unshare true); then
+            buildah unshare ./build.sh
+          else
+            ./build.sh
+          fi
           echo "::set-output name=image-sha::$(cat image.sha256)"
           buildah tag $(cat image.sha256) ghcr.io/${{github.repository}}:latest
 
