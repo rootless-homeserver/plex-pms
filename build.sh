@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-container=$(buildah from registry.redhat.io/ubi8/ubi:8.5)
+container=$(buildah from registry.redhat.io/ubi8/ubi-init:8.5)
 
 mnt=$(buildah mount ${container})
 dnf install -y --releasever 8 \
@@ -13,7 +13,7 @@ buildah config \
   --env TERM="xterm" \
   --env LANG="C.UTF-8" \
   --env LC_ALL="C.UTF-8" \
-  --env BUILDAH_ISOLATION=chroot \
+  --env BUILDAH_ISOLATION=rootless \
   $container
 
 buildah config --port 32400/tcp --port 8324/tcp --port 32469/tcp --port 1900/udp --port 32410/udp --port 32412/udp --port 32413/udp --port 32414/udp $container
