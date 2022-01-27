@@ -16,7 +16,7 @@ buildah config \
   --env BUILDAH_ISOLATION=chroot \
   $container
 
-buildah config --port 32400/tcp $container
+buildah config --port 32400/tcp --port 8324/tcp --port 32469/tcp --port 1900/udp --port 32410/udp --port 32412/udp --port 32413/udp --port 32414/udp $container
 mkdir $mnt/config
 mkdir $mnt/libraries
 cp ./updatePlex.sh $mnt/updatePlex.sh
