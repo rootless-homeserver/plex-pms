@@ -45,5 +45,4 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build-image.outputs.image-sha }}
-          tags: ${{github.repository}}:latest
-          registry: ghcr.io
+          tags: ghcr.io/${{github.repository}}:latest
