@@ -22,6 +22,7 @@ jobs:
       - id: build
         name: Build image
         run: |
+          chmod +x ./*.sh
           buildah unshare ./build.sh
           echo "::set-output name=image-sha::$(cat image.sha256)"
           buildah tag $(cat image.sha256) plexpms
