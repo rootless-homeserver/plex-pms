@@ -11,7 +11,6 @@ jobs:
       credentials:
         username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
         password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
-      options: --isolation=chroot
     outputs:
       image-sha: ${{ steps.build.outputs.image-sha }}
     steps:
