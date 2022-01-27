@@ -1,4 +1,6 @@
 name: Container Image Build
+env:
+  project: plex-pms
 on:
   push:
     branches:
@@ -18,29 +20,27 @@ jobs:
           username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
           password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
 
-      - name: Log in to the GitHub Container registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - id: build-image
         name: Build Image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: ghcr.io/${{github.repository}}
+          image: ${{env.project}}
           tags: latest
           containerfiles: |
             ./Containerfile
+
       - name: Echo Outputs
         run: |
           echo "Image: ${{ steps.build-image.outputs.image }}"
           echo "Tags: ${{ steps.build-image.outputs.tags }}"
           echo "Tagged Image: ${{ steps.build-image.outputs.image-with-tag }}"
+
       - name: Push to GitHub Container Repository
         id: push-to-ghcr
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build-image.outputs.image }}
-          tags: latest
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ghcr.io/${{github.repository_owner}}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
