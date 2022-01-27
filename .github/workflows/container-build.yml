@@ -1,8 +1,13 @@
 name: Container Image Build
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
   build-image:
     runs-on: ubuntu-latest
+    outputs:
+      image-sha: ${{ steps.build.outputs.image-sha }}
     steps:
       - name: Log in to Red Hat Registry
         uses: redhat-actions/podman-login@v1
@@ -14,13 +19,16 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-      - name: Build image
-        run: buildah unshare ./build.sh
+      - id: build
+        name: Build image
+        run: |
+          buildah unshare ./build.sh
+          echo "::set-output name=image-sha::hello"
 
       - name: Log in to the GitHub Container registry
         uses: redhat-actions/podman-login@v1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -30,4 +38,4 @@ jobs:
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
