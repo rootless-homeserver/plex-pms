@@ -11,35 +11,19 @@ jobs:
     outputs:
       image-sha: ${{ steps.build.outputs.image-sha }}
     steps:
-      - name: Log in to Red Hat Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: registry.redhat.io
-          username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
-          password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
-
       - name: Check out repository code
         uses: actions/checkout@v2
 
       - id: build
         name: Build image
         run: |
+          buildah login registry.redhat.io -u ${{ secrets.REGISTRY_REDHAT_IO_USER }} -p ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+          buildah login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           chmod +x ./*.sh
           buildah unshare ./build.sh
           echo "::set-output name=image-sha::$(cat image.sha256)"
-          buildah tag $(cat image.sha256) plexpms
-
-      - name: Log in to the GitHub Container registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          buildah tag $(cat image.sha256) ghcr.io/${{github.repository}}:latest
 
       - name: Push to GitHub Container Repository
         id: push-to-ghcr
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image-sha }}
-          tags: ${{github.repository}}:latest
-          registry: ghcr.io
+        run: buildah push ghcr.io/${{github.repository}}:latest
