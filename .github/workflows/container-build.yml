@@ -7,7 +7,7 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
     container:
-      image: docker://registry.redhat.io/ubi8/buildah:latest
+      image: docker://docker.io/buildah/buildah:latest
     outputs:
       image-sha: ${{ steps.build.outputs.image-sha }}
     steps:
