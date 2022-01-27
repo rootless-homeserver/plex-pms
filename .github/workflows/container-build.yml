@@ -1,0 +1,33 @@
+name: Container Image Build
+on: [push]
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Red Hat Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
+          password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Build image
+        run: buildah unshare ./build.sh
+
+      - name: Log in to the GitHub Container registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to GitHub Container Repository
+        id: push-to-ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
