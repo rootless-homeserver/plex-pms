@@ -11,4 +11,5 @@ if ! [ -e /dev/console ] ; then
 fi
 
 systemctl enable --now plexmediaserver
+
 systemctl start plexmediaserver
