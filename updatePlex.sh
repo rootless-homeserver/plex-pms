@@ -11,5 +11,7 @@ if ! [ -e /dev/console ] ; then
 fi
 
 systemctl enable --now plexmediaserver
-
+sed -i 's/^User=/#User=/' /etc/systemd/system/multi-user.target.wants/plexmediaserver.service
+sed -i 's/^Group=/#Group=/' /etc/systemd/system/multi-user.target.wants/plexmediaserver.service
+systemctl daemon-reload
 systemctl start plexmediaserver
