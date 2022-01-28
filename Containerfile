@@ -20,4 +20,4 @@ WORKDIR /config
 #buildah config --healthcheck /healthcheck.sh $container
 VOLUME /config
 VOLUME /libraries
-CMD /sbin/init
+CMD /usr/sbin/init
