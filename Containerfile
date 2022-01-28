@@ -13,7 +13,10 @@ EXPOSE 32400/tcp 8324/tcp 32469/tcp 1900/udp 32410/udp 32412/udp 32413/udp 32414
 
 ADD ./updatePlex.sh /updatePlex.sh
 ADD updatePlex.service /etc/systemd/system/updatePlex.service
-RUN mkdir -p $mnt/etc/systemd/system/ && ln -sf /etc/systemd/system/updatePlex.service /etc/systemd/system/multi-user.target.wants/updatePlex.service && mkdir /config
+RUN mkdir -p $mnt/etc/systemd/system/ && \
+    chmod +x /updatePlex.sh &&\
+    ln -sf /etc/systemd/system/updatePlex.service /etc/systemd/system/multi-user.target.wants/updatePlex.service && \
+    mkdir /config
 
 #cp ./healthcheck.sh $mnt/healthcheck.sh
 WORKDIR /config
